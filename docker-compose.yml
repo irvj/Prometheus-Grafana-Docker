@@ -1,0 +1,29 @@
+version: "3.7"
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+    restart: always
+  grafana:
+    image: grafana/grafana:latest
+    user: 1000:1000
+    volumes:
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini # config
+      - ./grafana/data:/var/lib/grafana # data
+      - ./grafana/logs:/var/log/grafana # logs
+      - ./grafana/provisioning:/etc/grafana/provisioning # provisioning
+
+    ports:
+      - 3000:3000
+    links:
+      - prometheus
+    restart: always
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: monitoring_node_exporter
+    restart: always
+    expose:
+      - 9101
